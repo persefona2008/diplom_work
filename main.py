@@ -28,6 +28,7 @@ class UserService:
         file_list = os.listdir(self.file_path)
         return file_list
 
+    # noinspection PyUnreachableCode
     def get_photos_method(self, user_id):
         params = {'access_token': self.token,
                   'v': self.api_version,
@@ -37,7 +38,10 @@ class UserService:
                   'photo_sizes': True
                   }
         response = requests.get(self.get_photos_method_url, params=params)
-        profile_list = response.json()
+
+        if response.status_code != 200:
+            print('Ошибка')
+        return response.json()
 
         for file in tqdm(profile_list['response']['items']):
             time.sleep(3)
@@ -55,6 +59,7 @@ class UserService:
         create_dir = requests.api.put(self.mkdir_url, headers=headers, params=params)
 
     def upload_photo(self):
+
         headers = {'Content-Type': 'application/json',
                    'Authorization': TOKEN_YADISK}
         logs_list = []
@@ -66,15 +71,15 @@ class UserService:
             get_url = get_upload_url.json()
             upload_url = get_url['href']
             file_upload = requests.api.put(upload_url, data=open(f'{self.file_path}/{photo}', 'rb'), headers=headers)
-            status = file_upload.status_code
+            status1 = file_upload.status_code
 
             download_log = {'file_name': photo, 'size': self.size}
             logs_list.append(download_log)
 
-        with open('files/log.json', 'a') as file:
+        with open('11.txt', 'w') as file:
             json.dump(logs_list, file, indent=2)
 
-        if 500 > status != 400:
+        if 500 > status1 != 400:
             print('Фотографии успешно загружены!')
         else:
             print('Ошибка при загрузке фотографий')
@@ -84,4 +89,4 @@ if __name__ == '__main__':
     user1 = UserService(1742449, TOKEN_VK)
     save_photos = user1.get_photos_method(user1.user_id)
     user1.create_folder()
-    back_up = user1.upload_photo()
+    user1.upload_photo()
