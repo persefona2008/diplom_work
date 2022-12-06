@@ -59,7 +59,7 @@ class UserService:
         create_dir = requests.api.put(self.mkdir_url, headers=headers, params=params)
 
     def upload_photo(self):
-        # global status1
+       
         headers = {'Content-Type': 'application/json',
                    'Authorization': TOKEN_YADISK}
         logs_list = []
