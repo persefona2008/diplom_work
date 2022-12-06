@@ -59,7 +59,7 @@ class UserService:
         create_dir = requests.api.put(self.mkdir_url, headers=headers, params=params)
 
     def upload_photo(self):
-
+        # global status1
         headers = {'Content-Type': 'application/json',
                    'Authorization': TOKEN_YADISK}
         logs_list = []
@@ -71,18 +71,15 @@ class UserService:
             get_url = get_upload_url.json()
             upload_url = get_url['href']
             file_upload = requests.api.put(upload_url, data=open(f'{self.file_path}/{photo}', 'rb'), headers=headers)
-            status1 = file_upload.status_code
+            file_upload.raise_for_status()
+            if file_upload.status_code == 202:
+                print(f'\n Файл {photo} загружен на Яндекс Диск')
 
             download_log = {'file_name': photo, 'size': self.size}
             logs_list.append(download_log)
 
-        with open('11.txt', 'w') as file:
+        with open('11.txt', 'a') as file:
             json.dump(logs_list, file, indent=2)
-
-        if 500 > status1 != 400:
-            print('Фотографии успешно загружены!')
-        else:
-            print('Ошибка при загрузке фотографий')
 
 
 if __name__ == '__main__':
